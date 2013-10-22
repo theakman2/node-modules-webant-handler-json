@@ -1,0 +1,20 @@
+{
+    "name":"webant-handler-json",
+    "author":"A Kazim",
+    "description":"A handler for the webant module for JSON requires.",
+    "keywords":[
+        "ant",
+        "json",
+        "webant"
+    ],
+    "version":"0.3.0",
+    "devDependencies":{
+        "test":"0.6.x"
+    },
+    "repository":"git://github.com/theakman2/node-modules-webant-handler-json.git",
+    "main":"./lib/index.js",
+    "scripts":{
+        "test":"node ./test/index.js"
+    },
+    "license":"MIT"
+}
