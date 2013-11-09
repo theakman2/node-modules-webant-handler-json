@@ -12,21 +12,19 @@ If for some reason you'd like to use the module outside of webant, install as fo
 
 ## Usage
 
-Ensure the `json` handler is present in your webant configuration file.
-
-An example configuration file which uses this handler may look like this:
+Ensure the `json` handler is present in your webant configuration file. For example:
 
 ````json
 {
-    "jsEntryPath":"%%base%%/src/js/main.js",
-    "jsDestPath":"%%base%%/build/main.js",
+    "entry":"src/js/main.js",
+    "dest":"build/main.js",
     "handlers":{
         "json":{}
     }
 }
 ````
 
-You may now `require` JSON files via the function style:
+You may now `require` JSON files:
 
 ````javascript
 var data = require("./path/to/data.json");
