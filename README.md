@@ -30,6 +30,6 @@ You may now `require` JSON files:
 var data = require("./path/to/data.json");
 ````
 
-## Tests
+## Tests [![Build Status](https://travis-ci.org/theakman2/node-modules-webant-handler-json.png?branch=master)](https://travis-ci.org/theakman2/node-modules-webant-handler-json)
 
     $ npm test
