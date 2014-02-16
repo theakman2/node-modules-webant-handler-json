@@ -1,0 +1,8 @@
+{
+	"foo":"bar",
+	"baz":[2,4,"test"],
+	"bar":{
+		"nested":"again",
+		"another":50
+	}
+}

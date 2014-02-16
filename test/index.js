@@ -1,31 +1,72 @@
+var fs = require("fs");
+var path = require("path");
+var vm = require("vm");
+var childProcess = require("child_process");
+
+var shellEscape = require("shell-escape");
+var webant = require("webant");
+
 var handler = require("../lib/index.js");
 
+function phantom(assert,done,cb) {
+	var pjs = childProcess.exec(
+		'phantomjs ' + shellEscape([path.join(__dirname,"headless","phantomwebant.js")]),
+		{
+			cwd:path.join(__dirname,"headless"),
+			maxBuffer:1024*1024
+		},
+		function(err,stdout,stderr) {
+			pjs.kill();
+			if (err) {
+				assert.fail("phantomjs reports an error: " + err);
+				done();
+				return;
+			}
+			if (stderr) {
+				assert.fail("phantomjs reports content in stderror: " + stderr);
+				done();
+				return;
+			}
+			var out;
+			try {
+				out = JSON.parse(stdout.trim());
+			} catch(e) {
+				assert.fail("Could not JSON.parse() stdout [stdout is: " + stdout + "]");
+				done();
+				return;
+			}
+			cb(out);
+		}
+	);
+}
+
 var tests = {
-	"test filetypes":function(assert) {
-		var data = [
-		            "https://mysite.co.uk/bla.js",
-		            "//cdn.google.com/path/to/assets.css",
-		            "path/to/assets.json",
-		            "/abs/path/to/assets.json",
-		            "@@hbs/runtime",
-		            "@@css/addStylesheet"
-		            ];
-		assert.deepEqual(
-			data.map(function(fp){ return handler.willHandle(fp);}),
-			[false,false,true,true,false,false],
-			"Should handle the correct files."
-		);
-	},
-	"test content":function(assert,done) {
-		handler.handle(__dirname+"/data.json",{},function(err,content){
-			assert.ok(!err,"There should be no errors handling this file.");
-			assert.equal(
-				content,
-				'module.exports = {"test":"foo","bar":4,"baz":[4,1,2]};',
-				"Handler should return the correct content."
-			);
-			
-			done();
+	"test handler":function(assert,done) {
+		webant({
+			entry:path.join(__dirname,"headless","entry.js"),
+			dest:path.join(__dirname,"headless","main.js"),
+			handlers:[handler]
+		},function(err){
+			if (err) {
+				assert.fail("Webant should not error when parsing javascript (error: " + err + ")");
+				done();
+				return;
+			}
+			phantom(assert,done,function(out){
+				assert.deepEqual(
+					out,
+					{
+						foo:"bar",
+						baz:[2,4,"test"],
+						bar:{
+							nested:"again",
+							another:50
+						}
+					},
+					"json should be compiled correctly"
+				);
+				done();
+			});
 		});
 	}
 };
